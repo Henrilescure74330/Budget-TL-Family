@@ -1,4 +1,5 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0c11">
 <title>Budget TL Family</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6,22 +7,16 @@
 <style>
 /* Layout : un salon privé — bandeau nuit et or, cartes à filets fins, chiffres en Garamond */
 :root{
-  --bg:#f2f1ed; --surface:#fbfaf7; --ink:#1a1c22; --muted:#6c675c; --line:#dfdad0;
-  --accent:#94702c; --accent-soft:#f0e8d6; --on-accent:#fbfaf7;
-  --ok:#3f7a55; --ok-soft:#e6efe5; --warn:#94650f; --warn-soft:#f5ebd5; --bad:#a43a2f; --bad-soft:#f6e2dd;
-  --band:#0e1118; --band-2:#1c2130; --band-fg:#efe8d8; --band-bad:#f0a196; --gold:#d1ac64;
+  --bg:#0a0c11; --surface:#121620; --surface-2:#0e121a; --ink:#efe9dc; --muted:#a39b86; --line:#252a35;
+  --accent:#c9a45c; --accent-soft:#272219; --on-accent:#0e1118;
+  --ok:#86c9a1; --ok-soft:#16261d; --warn:#e2b55e; --warn-soft:#2c2414; --bad:#ec9184; --bad-soft:#331a1a;
+  --band:#07090d; --band-2:#1a1f2c; --band-fg:#efe8d8; --band-bad:#f0a196; --gold:#d6b46e; --gold-hi:#f3dca6;
   --f-display:"Cormorant Garamond", Garamond, "Times New Roman", serif;
   --f-body:"Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --f-num:"Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0c0e13; --surface:#141820; --ink:#ece6d8; --muted:#9d9682; --line:#262b35;
-  --accent:#c9a45c; --accent-soft:#2a251a; --on-accent:#12151c;
-  --ok:#7cc49a; --ok-soft:#18291f; --warn:#e0b25c; --warn-soft:#2f2615; --bad:#e88a7e; --bad-soft:#34191a; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0c0e13; --surface:#141820; --ink:#ece6d8; --muted:#9d9682; --line:#262b35;
-  --accent:#c9a45c; --accent-soft:#2a251a; --on-accent:#12151c;
-  --ok:#7cc49a; --ok-soft:#18291f; --warn:#e0b25c; --warn-soft:#2f2615; --bad:#e88a7e; --bad-soft:#34191a; color-scheme:dark}
+/* Thème unique assumé : salon de nuit, filets et chiffres or */
 *{box-sizing:border-box}
 body{margin:0}
 [hidden]{display:none!important}
@@ -171,6 +166,41 @@ nav.tabs button{font-family:var(--f-display);font-size:19px;font-weight:500}
 .lock button.primary:hover,.lock button.primary:focus-visible{background:var(--gold);color:var(--band)}
 #pwMsg{color:var(--band-bad);font-size:14px;min-height:20px}
 @keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* — Luxe, second passage — */
+body{background:radial-gradient(ellipse 120% 60% at 50% -10%,var(--band-2),var(--bg) 62%) fixed,var(--bg)}
+.brand{display:flex;align-items:center;gap:18px}
+.mono.sm{width:60px;height:60px;font-size:23px;margin:0;flex:none}
+header{padding-bottom:22px;border-bottom:1px solid color-mix(in srgb,var(--gold) 28%,transparent);position:relative}
+header::after{content:"◆";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);font-size:9px;color:var(--gold);background:var(--bg);padding:0 10px}
+h1{background:linear-gradient(100deg,var(--ink) 40%,var(--gold-hi) 50%,var(--ink) 60%);background-size:260% 100%;background-position:0 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{color:var(--ink)}
+h2::after{content:"";display:block;width:34px;height:1px;background:var(--gold);margin-top:8px}
+.box,.kpi,.table-wrap{background:linear-gradient(180deg,var(--surface),var(--surface-2));border:1px solid color-mix(in srgb,var(--gold) 20%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--gold) 14%,transparent),0 30px 60px -40px #000}
+.kpi{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--gold) 55%,transparent),0 30px 60px -40px #000}
+.kpi .val{color:var(--gold)}
+.hero-val{color:var(--gold)}
+.big{color:var(--gold)}
+.hero{position:relative}
+button{background:transparent;border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);color:var(--ink);transition:background .3s,color .3s,border-color .3s}
+button:hover{border-color:var(--gold);color:var(--gold)}
+button.primary{background:linear-gradient(180deg,var(--gold-hi),var(--gold) 55%,var(--accent));border-color:var(--gold);color:var(--on-accent);font-weight:500}
+button.primary:hover{color:var(--on-accent);filter:brightness(1.08)}
+button.link{border:0;background:none}
+select,input{background:var(--surface-2);border-color:color-mix(in srgb,var(--gold) 22%,transparent)}
+nav.tabs{border-bottom:1px solid color-mix(in srgb,var(--gold) 22%,transparent);gap:8px}
+nav.tabs button{border:0;border-bottom:1px solid transparent;color:var(--muted)}
+nav.tabs button[aria-selected="true"]{color:var(--gold);border-bottom-color:var(--gold)}
+th{color:var(--gold);opacity:.85}
+td{border-bottom-color:var(--line)}
+tr:hover td{background:color-mix(in srgb,var(--gold) 4%,transparent)}
+.bar .track,.meter{background:color-mix(in srgb,var(--gold) 10%,transparent);height:6px}
+.bar .fill,.meter div:not(.over){background:linear-gradient(90deg,var(--accent),var(--gold-hi))}
+.month .col:not(.tax){background:linear-gradient(0deg,var(--accent),var(--gold-hi))}
+.sync.ok{background:transparent;border:1px solid color-mix(in srgb,var(--ok) 50%,transparent)}
+.sync{background:transparent;border:1px solid var(--line)}
+.notice{background:var(--warn-soft)}
+.lines li{border-bottom-color:var(--line)}
+@media (max-width:620px){.brand{gap:12px}.mono.sm{width:48px;height:48px;font-size:19px}}
 @keyframes ringin{from{opacity:0;transform:scale(.8) rotate(-25deg)}to{opacity:1;transform:none}}
 @keyframes glow{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 14px color-mix(in srgb,var(--gold) 55%,transparent))}}
 @keyframes sheen{0%{background-position:100% 0}55%,100%{background-position:0 0}}
@@ -182,6 +212,8 @@ nav.tabs button{font-family:var(--f-display);font-size:19px;font-weight:500}
   .lockcard>:nth-child(2){animation-delay:.3s}.lockcard>:nth-child(4){animation-delay:.6s}
   .lockcard>:nth-child(5){animation-delay:.75s}.lockcard>:nth-child(6){animation-delay:.9s}.lockcard>:nth-child(7){animation-delay:1s}
   .lock h1{background:linear-gradient(100deg,var(--band-fg) 42%,var(--gold) 50%,var(--band-fg) 58%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fadeup 1s cubic-bezier(.2,.7,.2,1) .45s both,sheen 6s ease-in-out 1.8s infinite}
+  h1:not(.lock h1){animation:sheen 9s ease-in-out 2s infinite}
+  .kpi .val,.hero-val{text-shadow:0 0 24px color-mix(in srgb,var(--gold) 25%,transparent)}
   #app.reveal>*{animation:fadeup .9s cubic-bezier(.2,.7,.2,1) both}
   #app.reveal>:nth-child(2){animation-delay:.08s}#app.reveal>:nth-child(3){animation-delay:.16s}#app.reveal>:nth-child(4){animation-delay:.24s}
   #app.reveal>:nth-child(5){animation-delay:.32s}#app.reveal>:nth-child(6){animation-delay:.4s}#app.reveal>:nth-child(n+7){animation-delay:.48s}
@@ -222,21 +254,33 @@ nav.tabs button{font-family:var(--f-display);font-size:19px;font-weight:500}
       ['gM','gY','hFix'].forEach(id=>countUp(document.getElementById(id)));};
     document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()};
   try{if(sessionStorage.getItem('bf-ok')===H){open();return}}catch(e){}
+  const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+  async function unseal(pw){const E=window.BF_ENC, enc=new TextEncoder();
+    const base=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(E.salt),iterations:E.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(E.iv)},key,b64(E.ct)); return JSON.parse(new TextDecoder().decode(pt))}
   async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
   document.getElementById('lockForm').addEventListener('submit',async e=>{e.preventDefault();
     const v=document.getElementById('pw').value.trim().toLowerCase();
     let ok=false; try{ok=(await hash(v))===H}catch(err){ok=false}
-    if(ok){try{sessionStorage.setItem('bf-ok',H)}catch(err){} open()}
+    if(ok){try{sessionStorage.setItem('bf-ok',H)}catch(err){}
+      if(window.BF_ENC){try{let cur=null;try{cur=JSON.parse(localStorage.getItem('budget-fiscal-v1')||'null')}catch(x){}
+        const empty=!cur||!((cur.dep||[]).length||(cur.tax||[]).length||(cur.rec||[]).length);
+        if(empty){const data=await unseal(v); localStorage.setItem('budget-fiscal-v1',JSON.stringify(Object.assign(data,{seed2:true}))); location.reload(); return}}catch(err){}}
+      open()}
     else{document.getElementById('pwMsg').textContent='Mot de passe incorrect. Réessayez.';document.getElementById('pw').select()}});
   document.getElementById('pw').focus();
 })();
 </script>
 <div class="wrap" id="app" hidden>
   <header>
-    <div>
+    <div class="brand">
+      <div class="mono sm" aria-hidden="true">TL</div>
+      <div>
       <p class="eyebrow-app">Espace privé · Famille</p>
       <h1>Budget TL Family</h1>
       <p class="sub">Charges, dépenses, impôts et taxes de la famille, réunis en un seul endroit.</p>
+      </div>
     </div>
     <div class="row">
       <span class="sync" id="syncSt" role="status">Enregistré sur cet appareil</span>
