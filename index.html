@@ -1,0 +1,600 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Budget TL Family</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : un registre de comptes — bandeau de synthèse, onglets, listes à colonnes alignées */
+:root{
+  --bg:#f3f5f6; --surface:#ffffff; --ink:#14232e; --muted:#5d6d78; --line:#dbe2e6;
+  --accent:#1d5a7a; --accent-soft:#e2eef4;
+  --ok:#2c7a4b; --ok-soft:#e3f2e8; --warn:#a86808; --warn-soft:#fbf0dc; --bad:#b3362c; --bad-soft:#f9e3e0;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171d; --surface:#17222a; --ink:#e4ecf0; --muted:#93a4ae; --line:#2a3842;
+  --accent:#6fb3d6; --accent-soft:#1c3443;
+  --ok:#6cc890; --ok-soft:#1a3326; --warn:#e7b25a; --warn-soft:#3a2e17; --bad:#f08a80; --bad-soft:#3d1f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171d; --surface:#17222a; --ink:#e4ecf0; --muted:#93a4ae; --line:#2a3842;
+  --accent:#6fb3d6; --accent-soft:#1c3443;
+  --ok:#6cc890; --ok-soft:#1a3326; --warn:#e7b25a; --warn-soft:#3a2e17; --bad:#f08a80; --bad-soft:#3d1f1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+[hidden]{display:none!important}
+.grand{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1px;background:var(--accent);border-radius:12px;overflow:hidden}
+.gcell{background:var(--accent);color:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.gcell + .gcell{border-left:1px solid color-mix(in srgb,var(--surface) 30%,transparent)}
+.gcell .lab{font-size:12px;text-transform:uppercase;letter-spacing:.07em;opacity:.85}
+.gval{font-size:clamp(30px,6.5vw,46px);font-weight:500;line-height:1.1}
+.gdet{font-size:13px;opacity:.9}
+@media (max-width:620px){.grand{grid-template-columns:minmax(0,1fr)}.gcell + .gcell{border-left:0;border-top:1px solid color-mix(in srgb,var(--surface) 30%,transparent)}}
+.lock{min-height:100vh;display:flex;align-items:center;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lock form{width:100%;max-width:340px}
+.wrap{max-width:1040px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,5vw,34px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0}
+.sub{color:var(--muted);margin:2px 0 0}
+.sync{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--muted)}
+.sync.ok{background:var(--ok-soft);color:var(--ok)}
+.sync.busy{background:var(--warn-soft);color:var(--warn)}
+.sync.err{background:var(--bad-soft);color:var(--bad)}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+select,input,button{font:inherit;color:inherit}
+select,input{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--surface);padding:8px 14px;font-weight:500}
+button.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+button.link{border:0;background:none;padding:4px 6px;color:var(--muted)}
+button.link:hover{color:var(--bad)}
+button.link.edit:hover{color:var(--accent)}
+.budget{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}
+.lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.lines li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.lines li.total{border-bottom:0;font-weight:600;font-size:16px}
+.big{font-family:var(--f-num);font-size:clamp(22px,4vw,30px);font-weight:500;color:var(--accent)}
+.meter{height:12px;background:var(--accent-soft);border-radius:6px;overflow:hidden}
+.meter div{height:100%;background:var(--accent);border-radius:6px}
+.meter div.over{background:var(--bad)}
+.kind{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;margin-left:6px}
+.kind.mensuelle{background:var(--accent-soft);color:var(--accent)}
+.kind.occasionnelle{background:var(--ok-soft);color:var(--ok)}
+.kind.impulsive{background:var(--warn-soft);color:var(--warn)}
+#envelope{width:100px;text-align:right}
+.hero .lab{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.hero-val{font-size:clamp(34px,7vw,50px);font-weight:500;color:var(--accent);line-height:1.1;margin:4px 0 2px}
+#fRec{grid-template-columns:minmax(0,2fr) minmax(0,1.3fr) 110px auto auto}
+.notice{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:var(--warn-soft);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lab{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.kpi .val{font-family:var(--f-num);font-size:clamp(18px,3vw,24px);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .hint{font-size:13px;color:var(--muted)}
+nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:10px 14px;color:var(--muted);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.panel{display:flex;flex-direction:column;gap:16px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:130px minmax(0,1fr) 92px;gap:10px;align-items:center;font-size:14px}
+.bar .track{height:10px;background:var(--accent-soft);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent);border-radius:5px}
+.bar .amt{text-align:right}
+.months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;align-items:end;height:150px;padding-top:8px}
+.month{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;min-width:0}
+.month .col{width:100%;max-width:28px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
+.month .col.tax{background:var(--warn)}
+.month span{font-size:11px;color:var(--muted)}
+.legend{display:flex;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+form.add{display:grid;grid-template-columns:130px minmax(0,2fr) minmax(0,1.3fr) 110px auto;gap:8px;align-items:end}
+form.add label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+form.add .chk{flex-direction:row;align-items:center;gap:6px;font-size:13px;color:var(--ink)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th{text-align:left;font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+tfoot td{font-weight:600;border-top:1px solid var(--line)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.neutral{background:var(--accent-soft);color:var(--accent)}
+.tag{font-size:12px;color:var(--muted)}
+.ex{font-size:11px;color:var(--warn);border:1px solid var(--warn);border-radius:4px;padding:0 4px;margin-left:6px}
+.dl{display:flex;flex-direction:column;gap:2px}
+.dl li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.dl li:last-child{border-bottom:0}
+ul.dl{list-style:none;margin:0;padding:0}
+.empty{color:var(--muted);font-size:14px;padding:8px 0}
+textarea{width:100%;min-height:120px;font-family:var(--f-num);font-size:12px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.msg{font-size:13px;color:var(--ok)}
+.cal li{grid-template-columns:110px minmax(0,1fr)}
+.cal .when{font-family:var(--f-num);font-size:13px;color:var(--accent)}
+@media (max-width:820px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  form.add{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  form.add .wide{grid-column:1/-1}
+  #fRec{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .budget{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:440px){.bar{grid-template-columns:96px minmax(0,1fr) 80px}.months span{font-size:9px}}
+@media (prefers-reduced-motion:no-preference){.fill,.col{transition:all .3s ease}}
+</style>
+</head><body>
+
+
+<div class="lock" id="lock">
+  <form class="box" id="lockForm">
+    <h1 style="font-size:26px">Budget TL Family</h1>
+    <label for="pw" class="tag">Mot de passe</label>
+    <input type="password" id="pw" autocomplete="current-password" required>
+    <button class="primary" type="submit">Ouvrir</button>
+    <span id="pwMsg" style="color:var(--bad);font-size:14px" role="alert"></span>
+  </form>
+</div>
+<script>
+(function(){
+  const H='dab48036536ad15d2b12b9982c364ecf4ca1334920a45ac607bd55a3a61d8d3f';
+  const lock=document.getElementById('lock');
+  const open=()=>{lock.hidden=true;document.getElementById('app').hidden=false};
+  try{if(sessionStorage.getItem('bf-ok')===H){open();return}}catch(e){}
+  async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  document.getElementById('lockForm').addEventListener('submit',async e=>{e.preventDefault();
+    const v=document.getElementById('pw').value.trim().toLowerCase();
+    let ok=false; try{ok=(await hash(v))===H}catch(err){ok=false}
+    if(ok){try{sessionStorage.setItem('bf-ok',H)}catch(err){} open()}
+    else{document.getElementById('pwMsg').textContent='Mot de passe incorrect. Réessayez.';document.getElementById('pw').select()}});
+  document.getElementById('pw').focus();
+})();
+</script>
+<div class="wrap" id="app" hidden>
+  <header>
+    <div>
+      <h1>Budget TL Family</h1>
+      <p class="sub">Dépenses, impôts et taxes au même endroit. Vos données restent dans ce navigateur.</p>
+    </div>
+    <div class="row">
+      <span class="sync" id="syncSt" role="status">Enregistré sur cet appareil</span>
+      <label class="row" for="year"><span class="tag">Année</span><select id="year"></select></label>
+    </div>
+  </header>
+
+  <div class="notice" id="exNotice" hidden>
+    <span>Les lignes marquées <b>exemple</b> sont fictives, pour vous montrer l'outil. Ajoutez les vôtres puis supprimez-les.</span>
+    <button id="clearEx" type="button">Supprimer les exemples</button>
+  </div>
+
+  <section class="grand" aria-label="Total tout compris">
+    <div class="gcell">
+      <span class="lab" id="gMLbl">Total tout compris ce mois</span>
+      <div class="gval num" id="gM"></div>
+      <span class="gdet" id="gMDet"></span>
+    </div>
+    <div class="gcell">
+      <span class="lab" id="gYLbl">Total tout compris sur l'année</span>
+      <div class="gval num" id="gY"></div>
+      <span class="gdet" id="gYDet"></span>
+    </div>
+  </section>
+
+  <section class="box hero" aria-label="Charges mensuelles régulières">
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div><span class="lab">Mes charges régulières, chaque mois</span><div class="hero-val num" id="hFix"></div><span class="tag" id="hFixH"></span></div>
+      <button type="button" id="goRec">Gérer mes charges fixes</button>
+    </div>
+    <div class="bars" id="recBars"></div>
+  </section>
+
+  <section class="kpis" aria-label="Synthèse de l'année">
+    <div class="kpi"><span class="lab">Dépenses</span><span class="val" id="kDep">0 €</span><span class="hint" id="kDepH"></span></div>
+    <div class="kpi"><span class="lab">Impôts &amp; taxes</span><span class="val" id="kTax">0 €</span><span class="hint" id="kTaxH"></span></div>
+    <div class="kpi"><span class="lab">Reste à payer</span><span class="val" id="kDue">0 €</span><span class="hint" id="kDueH"></span></div>
+    <div class="kpi"><span class="lab">Dépenses déductibles</span><span class="val" id="kDed">0 €</span><span class="hint">dons, garde, emploi à domicile…</span></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="synthese" aria-selected="true">Synthèse</button>
+    <button role="tab" data-tab="depenses" aria-selected="false">Dépenses</button>
+    <button role="tab" data-tab="charges" aria-selected="false">Charges fixes</button>
+    <button role="tab" data-tab="impots" aria-selected="false">Impôts &amp; taxes</button>
+    <button role="tab" data-tab="donnees" aria-selected="false">Sauvegarde</button>
+  </nav>
+
+  <!-- SYNTHÈSE -->
+  <section class="panel" id="p-synthese">
+    <div class="box">
+      <div class="row" style="justify-content:space-between"><h2>Mon budget du mois</h2><input type="month" id="bMonth" aria-label="Mois du budget"></div>
+      <div class="budget">
+        <ul class="lines">
+          <li><span>Charges fixes mensuelles</span><span class="num" id="bFix"></span></li>
+          <li><label for="envelope">Enveloppe pour l'occasionnel et l'impulsif</label><span class="row" style="gap:4px"><input type="number" id="envelope" min="0" step="10" inputmode="decimal" placeholder="0"> €</span></li>
+          <li><span><b>À dépenser au maximum</b></span><span class="num" id="bSpend" style="font-weight:600"></span></li>
+          <li><span>Impôts à mettre de côté <span class="tag" id="bTaxH"></span></span><span class="num" id="bTax"></span></li>
+          <li class="total"><span>Total à prévoir ce mois</span><span class="big" id="bTotal"></span></li>
+        </ul>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+          <ul class="lines">
+            <li><span>Dépenses mensuelles <span class="kind mensuelle">mensuelle</span></span><span class="num" id="sMens"></span></li>
+            <li><span>Dépenses occasionnelles <span class="kind occasionnelle">occasionnelle</span></span><span class="num" id="sOcc"></span></li>
+            <li><span>Dépenses impulsives <span class="kind impulsive">impulsive</span></span><span class="num" id="sImp"></span></li>
+            <li class="total"><span id="sLbl">Déjà dépensé</span><span class="num" id="sTot"></span></li>
+          </ul>
+          <div class="meter" aria-hidden="true"><div id="bMeter"></div></div>
+          <span id="bLeft"></span>
+        </div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="box">
+        <h2>Prochaines échéances</h2>
+        <ul class="dl" id="upcoming"></ul>
+      </div>
+      <div class="box">
+        <h2>Dépenses par catégorie</h2>
+        <div class="bars" id="catBars"></div>
+      </div>
+    </div>
+    <div class="box">
+      <div class="row" style="justify-content:space-between">
+        <h2>Mois par mois</h2>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Dépenses</span><span><i style="background:var(--warn)"></i>Impôts payés</span></div>
+      </div>
+      <div class="months" id="months"></div>
+    </div>
+    <div class="box">
+      <h2>Repères du calendrier fiscal</h2>
+      <ul class="dl cal">
+        <li><span class="when">Chaque mois</span><span>Prélèvement à la source sur salaire ou pension, ou acomptes mensuels pour les revenus indépendants et fonciers.</span></li>
+        <li><span class="when">Avril – juin</span><span>Déclaration des revenus de l'année précédente. Les dates limites dépendent de votre département.</span></li>
+        <li><span class="when">Été</span><span>Avis d'impôt sur le revenu. Solde éventuel prélevé à partir de septembre.</span></li>
+        <li><span class="when">Octobre</span><span>Taxe foncière, et taxe d'habitation pour une résidence secondaire.</span></li>
+        <li><span class="when">Décembre</span><span>Cotisation foncière des entreprises (CFE) pour les indépendants.</span></li>
+      </ul>
+      <p class="tag" style="margin:0">Repères indicatifs. Les dates exactes figurent sur vos avis et dans votre espace sur impots.gouv.fr.</p>
+    </div>
+  </section>
+
+  <!-- DÉPENSES -->
+  <section class="panel" id="p-depenses" hidden>
+    <form class="add box" id="fDep">
+      <label>Date<input type="date" id="dDate" required></label>
+      <label class="wide">Libellé<input type="text" id="dLib" placeholder="ex. Courses, loyer, facture EDF" required></label>
+      <label>Catégorie<select id="dCat"></select></label>
+      <label>Type<select id="dKind"><option value="occasionnelle">Occasionnelle</option><option value="impulsive">Impulsive</option><option value="mensuelle">Mensuelle</option></select></label>
+      <label>Montant (€)<input type="number" id="dAmt" step="0.01" min="0" inputmode="decimal" required></label>
+      <label class="chk wide"><input type="checkbox" id="dDed"> Déductible / crédit d'impôt</label>
+      <button class="primary wide" type="submit">Ajouter la dépense</button>
+      <button class="wide cancel" type="button" hidden>Annuler</button>
+    </form>
+    <div class="filters">
+      <select id="fMonth" aria-label="Filtrer par mois"></select>
+      <select id="fCat" aria-label="Filtrer par catégorie"></select>
+      <select id="fKind" aria-label="Filtrer par type"><option value="">Tous les types</option><option value="mensuelle">Mensuelles</option><option value="occasionnelle">Occasionnelles</option><option value="impulsive">Impulsives</option></select>
+      <input type="search" id="fTxt" placeholder="Rechercher…" aria-label="Rechercher une dépense">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Libellé</th><th>Catégorie</th><th class="r">Montant</th><th></th></tr></thead>
+        <tbody id="depRows"></tbody>
+        <tfoot><tr><td colspan="3">Total affiché</td><td class="r num" id="depTot"></td><td></td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHARGES FIXES -->
+  <section class="panel" id="p-charges" hidden>
+    <div class="box">
+      <h2>Mes charges fixes</h2>
+      <p class="sub" style="margin:0">Les dépenses qui reviennent chaque mois. Ajoutez, modifiez ou retirez-en au fur et à mesure, puis reportez-les sur un mois en un clic. Les dépenses déjà enregistrées ne changent pas.</p>
+      <form class="add" id="fRec">
+        <label class="wide">Libellé<input type="text" id="rLib" placeholder="ex. Abonnement salle de sport" required></label>
+        <label>Catégorie<select id="rCat"></select></label>
+        <label>Montant (€)<input type="number" id="rAmt" step="0.01" min="0" inputmode="decimal" required></label>
+        <button class="primary" type="submit">Ajouter la charge</button>
+        <button class="cancel" type="button" hidden>Annuler</button>
+      </form>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Charge</th><th>Catégorie</th><th class="r">Par mois</th><th></th></tr></thead>
+        <tbody id="recRows"></tbody>
+        <tfoot><tr><td colspan="2">Total mensuel</td><td class="r num" id="recTot"></td><td></td></tr></tfoot>
+      </table>
+    </div>
+    <div class="box">
+      <h2>Reporter sur un mois</h2>
+      <div class="row">
+        <input type="month" id="recMonth" aria-label="Mois">
+        <button type="button" class="primary" id="recApply">Ajouter ces charges aux dépenses du mois</button>
+      </div>
+      <span class="msg" id="recMsg"></span>
+    </div>
+  </section>
+
+  <!-- IMPÔTS -->
+  <section class="panel" id="p-impots" hidden>
+    <form class="add box" id="fTax">
+      <label>Échéance<input type="date" id="tDate" required></label>
+      <label class="wide">Impôt ou taxe<select id="tType"></select></label>
+      <label>Précision<input type="text" id="tNote" placeholder="ex. solde, 2e acompte"></label>
+      <label>Montant (€)<input type="number" id="tAmt" step="0.01" min="0" inputmode="decimal" required></label>
+      <label class="chk wide"><input type="checkbox" id="tPaid"> Déjà payé</label>
+      <button class="primary wide" type="submit">Ajouter l'échéance</button>
+      <button class="wide cancel" type="button" hidden>Annuler</button>
+    </form>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Échéance</th><th>Impôt / taxe</th><th>Statut</th><th class="r">Montant</th><th></th></tr></thead>
+        <tbody id="taxRows"></tbody>
+        <tfoot><tr><td colspan="3">Total de l'année</td><td class="r num" id="taxTot"></td><td></td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- SAUVEGARDE -->
+  <section class="panel" id="p-donnees" hidden>
+    <div class="box">
+      <h2>Sauvegarder vos données</h2>
+      <p class="sub" style="margin:0">Vos données sont enregistrées dans ce navigateur uniquement. Pour les conserver ailleurs ou les passer sur un autre appareil, copiez ce texte et collez-le dans un fichier ou une note.</p>
+      <textarea id="exportTxt" readonly aria-label="Données exportées"></textarea>
+      <div class="row"><button type="button" id="copyBtn">Copier les données</button><span class="msg" id="copyMsg"></span></div>
+    </div>
+    <div class="box">
+      <h2>Restaurer une sauvegarde</h2>
+      <textarea id="importTxt" placeholder="Collez ici le texte d'une sauvegarde" aria-label="Données à importer"></textarea>
+      <div class="row"><button type="button" class="primary" id="importBtn">Restaurer</button><span class="msg" id="importMsg"></span></div>
+    </div>
+    <div class="box">
+      <h2>Tout effacer</h2>
+      <div class="row">
+        <button type="button" id="wipeBtn">Effacer toutes mes données</button>
+        <button type="button" id="wipeOk" hidden style="color:var(--bad);border-color:var(--bad)">Confirmer l'effacement</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+const KEY='budget-fiscal-v1';
+const CATS=['Logement','Alimentation','Transport','Énergie & eau','Téléphone & internet','Santé','Assurances','Enfants & école','Épargne','Banque','Loisirs','Abonnements','Dons','Emploi à domicile','Travaux','Divers'];
+const TAXES=['Impôt sur le revenu','Prélèvement à la source','Taxe foncière','Taxe d\'habitation (résidence secondaire)','Prélèvements sociaux (CSG/CRDS)','Contribution à l\'audiovisuel / redevance','Cotisation foncière des entreprises (CFE)','TVA','Cotisations URSSAF','Taxe sur les ordures ménagères','Impôt sur la fortune immobilière (IFI)','Autre impôt ou taxe'];
+const MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const eur=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+const dfmt=new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2,10);
+const today=new Date(); today.setHours(0,0,0,0);
+const iso=d=>d.toISOString().slice(0,10);
+const curMonth=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+const pd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+
+function sample(){
+  const y=today.getFullYear(), m=(mm,dd)=>`${y}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  const dep=[
+    [m(1,5),'Loyer janvier','Logement',850],[m(2,5),'Loyer février','Logement',850],[m(3,5),'Loyer mars','Logement',850],
+    [m(1,12),'Courses','Alimentation',312.4],[m(2,14),'Courses','Alimentation',287.9],[m(3,11),'Courses','Alimentation',341.15],
+    [m(2,20),'Facture électricité','Énergie',96.3],[m(3,2),'Assurance habitation','Assurances',184],
+    [m(3,18),'Femme de ménage (CESU)','Emploi à domicile',240,true],[m(4,3),'Don association','Dons',150,true],
+    [m(4,9),'Plein d\'essence','Transport',78.6],[m(5,22),'Abonnement internet','Abonnements',29.99],
+    [m(6,15),'Consultation dentiste','Santé',70],[m(9,1),'Crèche septembre','Enfants & garde',420,true],[m(10,8),'Courses','Alimentation',298.2]
+  ].map(r=>({id:uid(),date:r[0],lib:r[1],cat:r[2],amt:r[3],ded:!!r[4],ex:true}));
+  const tax=[];
+  for(let i=1;i<=12;i++) tax.push({id:uid(),date:m(i,15),type:'Prélèvement à la source',note:'',amt:210,paid:pd(m(i,15))<=today,ex:true});
+  tax.push({id:uid(),date:m(9,25),type:'Impôt sur le revenu',note:'solde',amt:380,paid:pd(m(9,25))<=today,ex:true});
+  tax.push({id:uid(),date:m(10,15),type:'Taxe foncière',note:'',amt:1120,paid:false,ex:true});
+  tax.push({id:uid(),date:m(12,15),type:'Cotisation foncière des entreprises (CFE)',note:'',amt:260,paid:false,ex:true});
+  return {dep,tax};
+}
+
+function henri(){ return {dep:[],tax:[],rec:[],seed2:true}; }
+
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){S=null}
+if(!S||!Array.isArray(S.dep)||!Array.isArray(S.tax)) S=henri();
+else if(!S.seed2&&S.dep.concat(S.tax).every(r=>r.ex)) S=henri();
+if(!Array.isArray(S.rec)){S.rec=[];
+  S.dep.forEach(d=>{if(!d.ex&&!d.rec&&d.date==='2026-11-01'&&d.lib!=='Dentiste'){const id='r'+d.id;d.rec=id;S.rec.push({id,lib:d.lib,cat:d.cat,amt:d.amt})}});}
+S.dep.forEach(d=>{if(!d.kind)d.kind=d.rec?'mensuelle':'occasionnelle'});
+let year=today.getFullYear();
+let dbRef=null, pushTimer=null, pushing=false, pushAgain=false, remoteReady=false;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} pushRemote()};
+function setStatus(t,c){const el=document.getElementById('syncSt'); if(el){el.textContent=t; el.className='sync '+(c||'')}}
+function pushRemote(){if(!dbRef||!remoteReady)return; setStatus('Enregistrement…','busy'); clearTimeout(pushTimer); pushTimer=setTimeout(doPush,600)}
+async function doPush(){if(pushing){pushAgain=true;return} pushing=true;
+  try{await dbRef.set({dep:S.dep,tax:S.tax,rec:S.rec,envelope:S.envelope||0,auto:S.auto||[],updatedAt:new Date().toISOString()}); setStatus('✓ Enregistré sur tous vos appareils','ok')}
+  catch(e){setStatus('Pas enregistré en ligne : vos données restent sur cet appareil','err')}
+  pushing=false; pushTimer=null; if(pushAgain){pushAgain=false; doPush()}}
+function applyAutoMonth(){if(!Array.isArray(S.auto))S.auto=[]; if(S.rec.length&&!S.auto.includes(curMonth)){applyRec(curMonth);S.auto.push(curMonth);return true} return false}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inYear=r=>r.date.slice(0,4)==String(year);
+
+function status(t){
+  if(t.paid) return ['Payé','ok'];
+  const d=(pd(t.date)-today)/864e5;
+  if(d<0) return ['En retard','bad'];
+  if(d<=30) return [d===0?'Aujourd\'hui':`Dans ${Math.round(d)} j`,'warn'];
+  return ['À venir','neutral'];
+}
+
+function fillSelects(){
+  const years=new Set([today.getFullYear(),...S.dep.map(r=>+r.date.slice(0,4)),...S.tax.map(r=>+r.date.slice(0,4))]);
+  $('year').innerHTML=[...years].sort((a,b)=>b-a).map(y=>`<option ${y==year?'selected':''}>${y}</option>`).join('');
+  $('dCat').innerHTML=CATS.map(c=>`<option>${c}</option>`).join('');
+  $('rCat').innerHTML=$('dCat').innerHTML;
+  $('tType').innerHTML=TAXES.map(c=>`<option>${esc(c)}</option>`).join('');
+  $('fCat').innerHTML='<option value="">Toutes catégories</option>'+CATS.map(c=>`<option>${c}</option>`).join('');
+  $('fMonth').innerHTML='<option value="">Toute l\'année</option>'+MOIS.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
+}
+
+function render(){
+  const dep=S.dep.filter(inYear), tax=S.tax.filter(inYear);
+  const sum=a=>a.reduce((s,r)=>s+(+r.amt||0),0);
+  const dTot=sum(dep), tTot=sum(tax), due=sum(tax.filter(t=>!t.paid)), ded=sum(dep.filter(d=>d.ded));
+  const late=tax.filter(t=>status(t)[1]==='bad').length;
+  $('kDep').textContent=eur.format(dTot); $('kDepH').textContent=`${dep.length} opération${dep.length>1?'s':''}`;
+  $('kTax').textContent=eur.format(tTot); $('kTaxH').textContent=`payés : ${eur.format(tTot-due)}`;
+  $('kDue').textContent=eur.format(due); $('kDueH').innerHTML=late?`<span class="pill bad">${late} en retard</span>`:'aucun retard';
+  $('kDed').textContent=eur.format(ded);
+  $('exNotice').hidden=!(S.dep.some(r=>r.ex)||S.tax.some(r=>r.ex));
+  const exb=r=>r.ex?'<span class="ex">exemple</span>':'';
+
+  // échéances
+  const up=S.tax.filter(t=>!t.paid).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,6);
+  $('upcoming').innerHTML=up.length?up.map(t=>{const [l,c]=status(t);return `<li><div><div>${esc(t.type)}${t.note?` <span class="tag">· ${esc(t.note)}</span>`:''}${exb(t)}</div><div class="tag">${dfmt.format(pd(t.date))} · <span class="pill ${c}">${l}</span></div></div><span class="num">${eur.format(t.amt)}</span></li>`}).join(''):'<li class="empty">Rien à payer pour le moment.</li>';
+
+  // catégories
+  const bc={}; dep.forEach(r=>bc[r.cat]=(bc[r.cat]||0)+ +r.amt);
+  const cats=Object.entries(bc).sort((a,b)=>b[1]-a[1]); const mx=cats[0]?cats[0][1]:1;
+  $('catBars').innerHTML=cats.length?cats.map(([c,v])=>`<div class="bar"><span>${esc(c)}</span><div class="track"><div class="fill" style="width:${(v/mx*100).toFixed(1)}%"></div></div><span class="amt num">${eur.format(v)}</span></div>`).join(''):'<p class="empty">Aucune dépense cette année.</p>';
+
+  // mois
+  const md=Array(12).fill(0), mt=Array(12).fill(0);
+  dep.forEach(r=>md[+r.date.slice(5,7)-1]+=+r.amt); tax.filter(t=>t.paid).forEach(t=>mt[+t.date.slice(5,7)-1]+=+t.amt);
+  const mm=Math.max(1,...md,...mt);
+  $('months').innerHTML=MOIS.map((m,i)=>`<div class="month" title="${m} : dépenses ${eur.format(md[i])}, impôts ${eur.format(mt[i])}"><div style="display:flex;gap:2px;align-items:flex-end;height:100%;width:100%;justify-content:center"><div class="col" style="height:${md[i]/mm*100}%"></div><div class="col tax" style="height:${mt[i]/mm*100}%"></div></div><span>${m}</span></div>`).join('');
+
+  // table dépenses
+  const fm=$('fMonth').value, fc=$('fCat').value, fk=$('fKind').value, ft=$('fTxt').value.trim().toLowerCase();
+  const rows=dep.filter(r=>(!fm||+r.date.slice(5,7)==fm)&&(!fc||r.cat===fc)&&(!fk||(r.kind||'occasionnelle')===fk)&&(!ft||r.lib.toLowerCase().includes(ft))).sort((a,b)=>b.date.localeCompare(a.date));
+  $('depRows').innerHTML=rows.length?rows.map(r=>`<tr><td class="num">${dfmt.format(pd(r.date))}</td><td>${esc(r.lib)}<span class="kind ${r.kind||'occasionnelle'}">${r.kind||'occasionnelle'}</span>${r.ded?' <span class="pill ok">déductible</span>':''}${exb(r)}</td><td class="tag">${esc(r.cat)}</td><td class="r num">${eur.format(r.amt)}</td><td class="r" style="white-space:nowrap"><button class="link edit" data-edit="dep:${r.id}">Modifier</button><button class="link" data-del="dep:${r.id}">Supprimer</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Aucune dépense ne correspond.</td></tr>';
+  $('depTot').textContent=eur.format(sum(rows));
+
+  // table impôts
+  const trs=tax.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  $('taxRows').innerHTML=trs.length?trs.map(t=>{const [l,c]=status(t);return `<tr><td class="num">${dfmt.format(pd(t.date))}</td><td>${esc(t.type)}${t.note?` <span class="tag">· ${esc(t.note)}</span>`:''}${exb(t)}</td><td><button class="link" data-pay="${t.id}" title="Changer le statut"><span class="pill ${c}">${l}</span></button></td><td class="r num">${eur.format(t.amt)}</td><td class="r" style="white-space:nowrap"><button class="link edit" data-edit="tax:${t.id}">Modifier</button><button class="link" data-del="tax:${t.id}">Supprimer</button></td></tr>`}).join(''):'<tr><td colspan="5" class="empty">Aucune échéance cette année.</td></tr>';
+  $('taxTot').textContent=eur.format(tTot);
+
+  // budget du mois
+  const bm=$('bMonth').value||curMonth;
+  const fix=sum(S.rec), taxY=sum(S.tax.filter(t=>t.date.slice(0,4)===bm.slice(0,4))), taxM=taxY/12, env=+S.envelope||0, spendMax=fix+env;
+  const inM=S.dep.filter(d=>d.date.slice(0,7)===bm), byK=k=>sum(inM.filter(d=>(d.kind||'occasionnelle')===k));
+  const mens=byK('mensuelle'), occ=byK('occasionnelle'), imp=byK('impulsive'), spent=mens+occ+imp;
+  const lm=new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(pd(bm+'-01'));
+  $('bFix').textContent=eur.format(fix); $('bSpend').textContent=eur.format(spendMax);
+  $('bTax').textContent=eur.format(taxM); $('bTaxH').textContent=`(${eur.format(taxY)} sur ${bm.slice(0,4)} ÷ 12)`;
+  $('bTotal').textContent=eur.format(spendMax+taxM);
+  $('gMLbl').textContent=`Total tout compris · ${lm}`; $('gM').textContent=eur.format(spent+taxM);
+  $('gMDet').textContent=`charges fixes ${eur.format(mens)} + autres dépenses ${eur.format(occ+imp)} + impôts ${eur.format(taxM)}/mois`;
+  $('gYLbl').textContent=`Total tout compris · année ${year}`; $('gY').textContent=eur.format(dTot+tTot);
+  $('gYDet').textContent=`dépenses ${eur.format(dTot)} + impôts et taxes ${eur.format(tTot)}`;
+  $('sMens').textContent=eur.format(mens); $('sOcc').textContent=eur.format(occ); $('sImp').textContent=eur.format(imp);
+  $('sLbl').textContent=`Déjà dépensé en ${lm}`; $('sTot').textContent=eur.format(spent);
+  const over=spent>spendMax; $('bMeter').style.width=(spendMax?Math.min(100,spent/spendMax*100):(spent?100:0))+'%'; $('bMeter').classList.toggle('over',over);
+  $('bLeft').innerHTML=over?`<span style="color:var(--bad)">Dépassement de <b class="num">${eur.format(spent-spendMax)}</b> ce mois-ci.</span>`:`Il vous reste <b class="num">${eur.format(spendMax-spent)}</b> à dépenser ce mois-ci.`;
+
+  // charges fixes
+  $('recRows').innerHTML=S.rec.length?S.rec.map(c=>`<tr><td>${esc(c.lib)}</td><td class="tag">${esc(c.cat)}</td><td class="r num">${eur.format(c.amt)}</td><td class="r" style="white-space:nowrap"><button class="link edit" data-edit="rec:${c.id}">Modifier</button><button class="link" data-del="rec:${c.id}">Retirer</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Aucune charge fixe. Ajoutez-en une ci-dessus.</td></tr>';
+  $('recTot').textContent=eur.format(sum(S.rec));
+  $('hFix').textContent=eur.format(fix);
+  $('hFixH').textContent=S.rec.length?`${S.rec.length} charge${S.rec.length>1?'s':''} fixe${S.rec.length>1?'s':''} · soit ${eur.format(fix*12)} par an`:'Ajoutez vos charges fixes (loyer, EDF, eau, assurances…) pour voir ce total.';
+  const rc={}; S.rec.forEach(c=>rc[c.cat]=(rc[c.cat]||0)+ +c.amt);
+  const rcs=Object.entries(rc).sort((a,b)=>b[1]-a[1]), rmx=rcs[0]?rcs[0][1]:1;
+  $('recBars').innerHTML=rcs.map(([c,v])=>`<div class="bar"><span>${esc(c)}</span><div class="track"><div class="fill" style="width:${(v/rmx*100).toFixed(1)}%"></div></div><span class="amt num">${eur.format(v)}</span></div>`).join('');
+
+  $('exportTxt').value=JSON.stringify({app:'budget-fiscal',version:3,dep:S.dep,tax:S.tax,rec:S.rec,envelope:S.envelope||0},null,1);
+}
+
+const edit={dep:null,tax:null,rec:null};
+const FORM={dep:'fDep',tax:'fTax',rec:'fRec'};
+const LBL={dep:['Ajouter la dépense','Enregistrer les modifications'],tax:['Ajouter l\'échéance','Enregistrer les modifications'],rec:['Ajouter la charge','Enregistrer les modifications']};
+function setMode(k){const f=$(FORM[k]);f.querySelector('[type=submit]').textContent=LBL[k][edit[k]?1:0];f.querySelector('.cancel').hidden=!edit[k]}
+function startEdit(k,id){const r=S[k].find(x=>x.id===id); if(!r)return; edit[k]=id;
+  if(k==='dep'){$('dDate').value=r.date;$('dLib').value=r.lib;$('dCat').value=r.cat;$('dAmt').value=r.amt;$('dDed').checked=!!r.ded;$('dKind').value=r.kind||'occasionnelle'}
+  if(k==='tax'){$('tDate').value=r.date;$('tType').value=r.type;$('tNote').value=r.note||'';$('tAmt').value=r.amt;$('tPaid').checked=!!r.paid}
+  if(k==='rec'){$('rLib').value=r.lib;$('rCat').value=r.cat;$('rAmt').value=r.amt}
+  setMode(k); $(FORM[k]).scrollIntoView({block:'center'}); $(FORM[k]).querySelector('input[type=text],input[type=date]').focus();}
+function endEdit(k){edit[k]=null;
+  if(k==='dep'){$('dLib').value='';$('dAmt').value='';$('dDed').checked=false}
+  if(k==='tax'){$('tNote').value='';$('tAmt').value='';$('tPaid').checked=false}
+  if(k==='rec'){$('rLib').value='';$('rAmt').value=''}
+  setMode(k);}
+function applyRec(m){let n=0;S.rec.forEach(c=>{if(S.dep.some(d=>d.rec===c.id&&d.date.slice(0,7)===m))return;S.dep.push({id:uid(),date:m+'-01',lib:c.lib,cat:c.cat,amt:c.amt,ded:false,rec:c.id,kind:'mensuelle'});n++});return n}
+function commit(){save();fillYearKeep();render()}
+function fillYearKeep(){const cur=year;fillSelects();year=cur;$('year').value=String(year)}
+
+// events
+$('year').addEventListener('change',e=>{year=+e.target.value;render()});
+$('bMonth').addEventListener('change',render);
+$('goRec').addEventListener('click',()=>document.querySelector('nav.tabs [data-tab="charges"]').click());
+$('envelope').addEventListener('input',e=>{S.envelope=Math.max(0,+e.target.value||0);save();render()});
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  ['synthese','depenses','charges','impots','donnees'].forEach(t=>$('p-'+t).hidden=t!==b.dataset.tab);
+}));
+['fMonth','fCat','fKind','fTxt'].forEach(id=>$(id).addEventListener('input',render));
+function upsert(k,v){const r=edit[k]&&S[k].find(x=>x.id===edit[k]); if(r){Object.assign(r,v);delete r.ex} else S[k].push({id:uid(),...v})}
+$('fDep').addEventListener('submit',e=>{e.preventDefault();
+  const v={date:$('dDate').value,lib:$('dLib').value.trim(),cat:$('dCat').value,amt:+$('dAmt').value,ded:$('dDed').checked,kind:$('dKind').value};
+  upsert('dep',v); year=+v.date.slice(0,4); endEdit('dep'); commit(); $('dLib').focus();});
+$('fTax').addEventListener('submit',e=>{e.preventDefault();
+  const v={date:$('tDate').value,type:$('tType').value,note:$('tNote').value.trim(),amt:+$('tAmt').value,paid:$('tPaid').checked};
+  upsert('tax',v); year=+v.date.slice(0,4); endEdit('tax'); commit();});
+$('fRec').addEventListener('submit',e=>{e.preventDefault();
+  upsert('rec',{lib:$('rLib').value.trim(),cat:$('rCat').value,amt:+$('rAmt').value}); endEdit('rec'); commit(); $('rLib').focus();});
+document.querySelectorAll('form .cancel').forEach(b=>b.addEventListener('click',()=>endEdit(Object.keys(FORM).find(k=>FORM[k]===b.form.id))));
+$('recApply').addEventListener('click',()=>{const m=$('recMonth').value; if(!m){$('recMsg').textContent='Choisissez un mois.';return}
+  const n=applyRec(m);
+  const lm=new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(pd(m+'-01'));
+  year=+m.slice(0,4); commit();
+  $('recMsg').textContent=n?`${n} charge${n>1?'s':''} ajoutée${n>1?'s':''} aux dépenses de ${lm}.`:`Ces charges figurent déjà dans les dépenses de ${lm}.`;});
+document.addEventListener('click',e=>{
+  const ed=e.target.closest('[data-edit]'); if(ed){const [k,id]=ed.dataset.edit.split(':');startEdit(k,id);return}
+  const d=e.target.closest('[data-del]'); if(d){const [k,id]=d.dataset.del.split(':');S[k]=S[k].filter(r=>r.id!==id);if(edit[k]===id)endEdit(k);commit();return}
+  const p=e.target.closest('[data-pay]'); if(p){const t=S.tax.find(r=>r.id===p.dataset.pay); if(t){t.paid=!t.paid;commit()}}
+});
+$('clearEx').addEventListener('click',()=>{S.dep=S.dep.filter(r=>!r.ex);S.tax=S.tax.filter(r=>!r.ex);S.seed2=true;commit()});
+$('copyBtn').addEventListener('click',()=>{const t=$('exportTxt');
+  const done=()=>$('copyMsg').textContent='Copié. Collez-le dans un fichier ou une note.';
+  try{navigator.clipboard.writeText(t.value).then(done,()=>{t.select();$('copyMsg').textContent='Texte sélectionné : faites Ctrl+C (ou ⌘+C).'})}catch(err){t.select();$('copyMsg').textContent='Texte sélectionné : faites Ctrl+C (ou ⌘+C).'}});
+$('importBtn').addEventListener('click',()=>{
+  try{const o=JSON.parse($('importTxt').value); if(!Array.isArray(o.dep)||!Array.isArray(o.tax)) throw 0;
+    S={dep:o.dep,tax:o.tax,rec:Array.isArray(o.rec)?o.rec:[],envelope:+o.envelope||0,seed2:true}; $('envelope').value=S.envelope||''; commit(); $('importMsg').style.color='var(--ok)'; $('importMsg').textContent=`Restauré : ${o.dep.length} dépenses, ${o.tax.length} échéances.`; $('importTxt').value='';}
+  catch(err){$('importMsg').style.color='var(--bad)';$('importMsg').textContent='Ce texte n\'est pas une sauvegarde valide. Copiez-la en entier depuis la section ci-dessus.'}});
+$('wipeBtn').addEventListener('click',()=>{$('wipeOk').hidden=false});
+$('wipeOk').addEventListener('click',()=>{S={dep:[],tax:[],rec:[],seed2:true};$('wipeOk').hidden=true;commit()});
+
+$('dDate').value=iso(new Date(today.getTime()-today.getTimezoneOffset()*6e4));
+$('tDate').value=$('dDate').value;
+$('recMonth').value=curMonth; $('bMonth').value=curMonth; $('envelope').value=S.envelope||'';
+applyAutoMonth();
+fillSelects(); render(); save();
+
+// Synchronisation en ligne : mêmes données sur tous les appareils
+(async()=>{
+  let db=null; try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  if(!db){setStatus('Enregistré sur cet appareil seulement','');return}
+  setStatus('Connexion…','busy');
+  dbRef=db.doc('budget/famille');
+  const t=setTimeout(()=>{if(!remoteReady)setStatus('Données en ligne injoignables pour l\'instant','err')},10000);
+  let first=true;
+  dbRef.onSnapshot(snap=>{
+    const md=snap.metadata||{};
+    if(md.hasPendingWrites)return;
+    if(!md.fromCache)clearTimeout(t);
+    if(!snap.exists){ if(first&&!md.fromCache){first=false;remoteReady=true;doPush()} return }
+    const d=snap.data()||{};
+    S={dep:d.dep||[],tax:d.tax||[],rec:d.rec||[],envelope:d.envelope||0,auto:d.auto||[],seed2:true};
+    try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+    if(first){first=false;remoteReady=true; if(applyAutoMonth())pushRemote()}
+    if(document.activeElement!==$('envelope'))$('envelope').value=S.envelope||'';
+    if(!Object.values(edit).some(Boolean))fillYearKeep();
+    render();
+    if(!md.fromCache&&!pushing&&!pushTimer)setStatus('✓ Enregistré sur tous vos appareils','ok');
+  },e=>{clearTimeout(t);dbRef=null;setStatus('Enregistrement en ligne indisponible : données gardées sur cet appareil','err')});
+})();
+})();
+</script>
+
+</body></html>
