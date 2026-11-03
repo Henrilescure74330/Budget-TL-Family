@@ -2,27 +2,29 @@
 <title>Budget TL Family</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap">
 <style>
-/* Layout : un registre de comptes — bandeau de synthèse, onglets, listes à colonnes alignées */
+/* Layout : un salon privé — bandeau nuit et or, cartes à filets fins, chiffres en Garamond */
 :root{
-  --bg:#f3f5f6; --surface:#ffffff; --ink:#14232e; --muted:#5d6d78; --line:#dbe2e6;
-  --accent:#1d5a7a; --accent-soft:#e2eef4;
-  --ok:#2c7a4b; --ok-soft:#e3f2e8; --warn:#a86808; --warn-soft:#fbf0dc; --bad:#b3362c; --bad-soft:#f9e3e0;
-  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --f-body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
-  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --bg:#f2f1ed; --surface:#fbfaf7; --ink:#1a1c22; --muted:#6c675c; --line:#dfdad0;
+  --accent:#94702c; --accent-soft:#f0e8d6; --on-accent:#fbfaf7;
+  --ok:#3f7a55; --ok-soft:#e6efe5; --warn:#94650f; --warn-soft:#f5ebd5; --bad:#a43a2f; --bad-soft:#f6e2dd;
+  --band:#0e1118; --band-2:#1c2130; --band-fg:#efe8d8; --band-bad:#f0a196; --gold:#d1ac64;
+  --f-display:"Cormorant Garamond", Garamond, "Times New Roman", serif;
+  --f-body:"Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-num:"Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f171d; --surface:#17222a; --ink:#e4ecf0; --muted:#93a4ae; --line:#2a3842;
-  --accent:#6fb3d6; --accent-soft:#1c3443;
-  --ok:#6cc890; --ok-soft:#1a3326; --warn:#e7b25a; --warn-soft:#3a2e17; --bad:#f08a80; --bad-soft:#3d1f1c; color-scheme:dark}}
+  --bg:#0c0e13; --surface:#141820; --ink:#ece6d8; --muted:#9d9682; --line:#262b35;
+  --accent:#c9a45c; --accent-soft:#2a251a; --on-accent:#12151c;
+  --ok:#7cc49a; --ok-soft:#18291f; --warn:#e0b25c; --warn-soft:#2f2615; --bad:#e88a7e; --bad-soft:#34191a; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f171d; --surface:#17222a; --ink:#e4ecf0; --muted:#93a4ae; --line:#2a3842;
-  --accent:#6fb3d6; --accent-soft:#1c3443;
-  --ok:#6cc890; --ok-soft:#1a3326; --warn:#e7b25a; --warn-soft:#3a2e17; --bad:#f08a80; --bad-soft:#3d1f1c; color-scheme:dark}
+  --bg:#0c0e13; --surface:#141820; --ink:#ece6d8; --muted:#9d9682; --line:#262b35;
+  --accent:#c9a45c; --accent-soft:#2a251a; --on-accent:#12151c;
+  --ok:#7cc49a; --ok-soft:#18291f; --warn:#e0b25c; --warn-soft:#2f2615; --bad:#e88a7e; --bad-soft:#34191a; color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
 [hidden]{display:none!important}
 .grand{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1px;background:var(--accent);border-radius:12px;overflow:hidden}
@@ -130,24 +132,95 @@ textarea{width:100%;min-height:120px;font-family:var(--f-num);font-size:12px;bac
 }
 @media (max-width:440px){.bar{grid-template-columns:96px minmax(0,1fr) 80px}.months span{font-size:9px}}
 @media (prefers-reduced-motion:no-preference){.fill,.col{transition:all .3s ease}}
+
+/* — Habillage luxe — */
+body{letter-spacing:.01em}
+h1,h2{font-family:var(--f-display);letter-spacing:.01em}
+h1{font-size:clamp(34px,6vw,46px);font-weight:500;line-height:1.05}
+h2{font-size:23px;font-weight:600}
+.sub{font-family:var(--f-display);font-style:italic;font-size:18px}
+.eyebrow-app{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.box,.kpi,.table-wrap{border-radius:3px;box-shadow:0 20px 40px -32px color-mix(in srgb,var(--ink) 45%,transparent)}
+.kpi .lab,.hero .lab,th{letter-spacing:.18em;font-size:11px;font-weight:500}
+.kpi .val{font-family:var(--f-display);font-size:clamp(22px,3.4vw,30px)}
+.hero-val,.big{font-family:var(--f-display);font-weight:500}
+button,select,input{border-radius:2px}
+button{letter-spacing:.05em}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+nav.tabs button{font-family:var(--f-display);font-size:19px;font-weight:500}
+.grand{background:radial-gradient(ellipse at 20% 0%,var(--band-2),var(--band) 70%);border-radius:3px;border:1px solid color-mix(in srgb,var(--gold) 40%,transparent)}
+.gcell{background:transparent;color:var(--band-fg);padding:26px 28px}
+.gcell + .gcell{border-left:1px solid color-mix(in srgb,var(--gold) 30%,transparent)}
+.gcell .lab{letter-spacing:.24em;font-size:11px;opacity:1;color:color-mix(in srgb,var(--band-fg) 72%,transparent)}
+.gval{font-family:var(--f-display);font-weight:500;color:var(--gold);font-size:clamp(38px,7vw,58px)}
+.gdet{opacity:1;color:color-mix(in srgb,var(--band-fg) 75%,transparent)}
+@media (max-width:620px){.gcell + .gcell{border-left:0;border-top:1px solid color-mix(in srgb,var(--gold) 30%,transparent)}}
+.bar .fill,.meter div:not(.over){background:linear-gradient(90deg,var(--accent),var(--gold))}
+.month .col:not(.tax){background:linear-gradient(0deg,var(--accent),var(--gold))}
+.lock{background:radial-gradient(ellipse at 50% 28%,var(--band-2),var(--band) 72%);color:var(--band-fg)}
+.lockcard{width:100%;max-width:380px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-block:40px}
+.mono{width:88px;height:88px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-size:36px;font-weight:500;color:var(--gold);letter-spacing:.08em;box-shadow:inset 0 0 0 5px var(--band),inset 0 0 0 6px color-mix(in srgb,var(--gold) 45%,transparent);margin-bottom:6px}
+.lock .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:color-mix(in srgb,var(--band-fg) 65%,transparent);margin:0}
+.lock h1{color:var(--band-fg);font-size:clamp(36px,9vw,48px);margin:0}
+.rule{display:flex;align-items:center;gap:12px;width:170px;color:var(--gold);font-size:8px;margin:2px 0 14px}
+.rule::before,.rule::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--gold) 60%,transparent)}
+.lock input{width:100%;max-width:260px;background:transparent;border:0;border-bottom:1px solid color-mix(in srgb,var(--gold) 55%,transparent);border-radius:0;color:var(--band-fg);text-align:center;font-size:20px;letter-spacing:.4em;padding:10px 0}
+.lock input:focus-visible{outline:none;border-bottom-color:var(--gold)}
+.lock button.primary{background:transparent;color:var(--gold);border:1px solid var(--gold);padding:12px 44px;text-transform:uppercase;letter-spacing:.3em;font-size:12px;margin-top:8px;transition:background .3s,color .3s}
+.lock button.primary:hover,.lock button.primary:focus-visible{background:var(--gold);color:var(--band)}
+#pwMsg{color:var(--band-bad);font-size:14px;min-height:20px}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ringin{from{opacity:0;transform:scale(.8) rotate(-25deg)}to{opacity:1;transform:none}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 14px color-mix(in srgb,var(--gold) 55%,transparent))}}
+@keyframes sheen{0%{background-position:100% 0}55%,100%{background-position:0 0}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:no-preference){
+  .lockcard>*{animation:fadeup 1s cubic-bezier(.2,.7,.2,1) both}
+  .lockcard>.mono{animation:ringin 1.5s cubic-bezier(.2,.7,.2,1) both,glow 4.5s ease-in-out 1.6s infinite}
+  .lockcard>:nth-child(2){animation-delay:.3s}.lockcard>:nth-child(4){animation-delay:.6s}
+  .lockcard>:nth-child(5){animation-delay:.75s}.lockcard>:nth-child(6){animation-delay:.9s}.lockcard>:nth-child(7){animation-delay:1s}
+  .lock h1{background:linear-gradient(100deg,var(--band-fg) 42%,var(--gold) 50%,var(--band-fg) 58%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fadeup 1s cubic-bezier(.2,.7,.2,1) .45s both,sheen 6s ease-in-out 1.8s infinite}
+  #app.reveal>*{animation:fadeup .9s cubic-bezier(.2,.7,.2,1) both}
+  #app.reveal>:nth-child(2){animation-delay:.08s}#app.reveal>:nth-child(3){animation-delay:.16s}#app.reveal>:nth-child(4){animation-delay:.24s}
+  #app.reveal>:nth-child(5){animation-delay:.32s}#app.reveal>:nth-child(6){animation-delay:.4s}#app.reveal>:nth-child(n+7){animation-delay:.48s}
+  .grand{position:relative}
+  .grand::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 35%,color-mix(in srgb,var(--gold) 16%,transparent) 50%,transparent 65%);background-size:260% 100%;animation:sheen 8s ease-in-out 1.2s infinite}
+  .bar .fill{transform-origin:left;animation:grow 1.2s cubic-bezier(.2,.7,.2,1) both}
+  .month .col{transform-origin:bottom;animation:rise 1s cubic-bezier(.2,.7,.2,1) both}
+  .panel:not([hidden]){animation:fadeup .55s cubic-bezier(.2,.7,.2,1) both}
+  .box,.kpi{transition:transform .35s ease,box-shadow .35s ease}
+  .kpi:hover{transform:translateY(-3px);box-shadow:0 26px 44px -30px color-mix(in srgb,var(--ink) 55%,transparent)}
+  nav.tabs button{transition:color .3s,border-color .3s}
+}
 </style>
 </head><body>
 
 
 <div class="lock" id="lock">
-  <form class="box" id="lockForm">
-    <h1 style="font-size:26px">Budget TL Family</h1>
-    <label for="pw" class="tag">Mot de passe</label>
+  <form id="lockForm" class="lockcard">
+    <div class="mono" aria-hidden="true">TL</div>
+    <p class="eyebrow">Espace privé · Famille</p>
+    <h1>Budget TL Family</h1>
+    <div class="rule" aria-hidden="true"><span>◆</span></div>
+    <label for="pw" class="eyebrow">Mot de passe</label>
     <input type="password" id="pw" autocomplete="current-password" required>
-    <button class="primary" type="submit">Ouvrir</button>
-    <span id="pwMsg" style="color:var(--bad);font-size:14px" role="alert"></span>
+    <button class="primary" type="submit">Entrer</button>
+    <span id="pwMsg" role="alert"></span>
   </form>
 </div>
 <script>
 (function(){
   const H='dab48036536ad15d2b12b9982c364ecf4ca1334920a45ac607bd55a3a61d8d3f';
   const lock=document.getElementById('lock');
-  const open=()=>{lock.hidden=true;document.getElementById('app').hidden=false};
+  const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function countUp(el){if(!el||RM)return; const fin=el.textContent; const n=parseFloat(fin.replace(/[^0-9,\-]/g,'').replace(',','.')); if(!isFinite(n)||!n)return;
+    const f=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}), t0=performance.now(), D=1400;
+    (function step(t){const k=Math.min(1,(t-t0)/D), e=1-Math.pow(1-k,3); el.textContent=k<1?f.format(n*e):fin; if(k<1)requestAnimationFrame(step)})(t0);}
+  const open=()=>{const go=()=>{const app=document.getElementById('app'); lock.hidden=true; app.hidden=false; app.classList.add('reveal');
+      ['gM','gY','hFix'].forEach(id=>countUp(document.getElementById(id)));};
+    document.readyState==='loading'?document.addEventListener('DOMContentLoaded',go):go()};
   try{if(sessionStorage.getItem('bf-ok')===H){open();return}}catch(e){}
   async function hash(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
   document.getElementById('lockForm').addEventListener('submit',async e=>{e.preventDefault();
@@ -161,8 +234,9 @@ textarea{width:100%;min-height:120px;font-family:var(--f-num);font-size:12px;bac
 <div class="wrap" id="app" hidden>
   <header>
     <div>
+      <p class="eyebrow-app">Espace privé · Famille</p>
       <h1>Budget TL Family</h1>
-      <p class="sub">Dépenses, impôts et taxes au même endroit. Vos données restent dans ce navigateur.</p>
+      <p class="sub">Charges, dépenses, impôts et taxes de la famille, réunis en un seul endroit.</p>
     </div>
     <div class="row">
       <span class="sync" id="syncSt" role="status">Enregistré sur cet appareil</span>
